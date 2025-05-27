@@ -1,0 +1,412 @@
+{%- style -%}
+  .collection-slider-section {
+    padding: 50px 0;
+    background-color: {{ section.settings.background_color }};
+  }
+  .collection-slider__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    color: {{ section.settings.heading_color }};
+    font-size: {{ section.settings.heading_size }}px;
+  }
+  .collection-slider {
+    position: relative;
+  }
+  .collection-slider__item {
+    padding: 0 15px;
+    text-align: center;
+  }
+  .collection-slider__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .collection-slider__image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: {{ section.settings.image_border_radius }}px;
+    margin-bottom: 15px;
+    aspect-ratio: 1/1;
+  }
+  .collection-slider__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .collection-slider__item:hover .collection-slider__image {
+    transform: scale(1.05);
+  }
+  .collection-slider__title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: {{ section.settings.title_color }};
+  }
+  .collection-slider__count {
+    color: {{ section.settings.count_color }};
+    font-size: 14px;
+  }
+  .owl-nav button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: {{ section.settings.nav_background }} !important;
+    color: {{ section.settings.nav_color }} !important;
+    width: 40px;
+    height: 40px;
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+  .owl-nav button:hover {
+    opacity: 1;
+  }
+  .owl-nav button span {
+    font-size: 24px;
+    line-height: 1;
+    display: block;
+    margin-top: -2px;
+  }
+  .owl-nav button.owl-prev {
+    left: -20px;
+  }
+  .owl-nav button.owl-next {
+    right: -20px;
+  }
+  .owl-dots {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .owl-dots button.owl-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: {{ section.settings.dot_color }} !important;
+    margin: 0 5px;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+  .owl-dots button.owl-dot.active {
+    opacity: 1;
+  }
+.owl-carousel .owl-item img {
+    display: block;
+    width: 100%;
+    border-radius: 130px;
+   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+  .collection-slider__image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 500px;
+    margin-bottom: 15px;
+    aspect-ratio: 1/1;
+     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+  .collection-slider__count {
+    margin-top: 0;
+    color: #777777;
+    font-size: 15px;
+}
+  .collection-slider__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #000000;
+    font-size: 32px;
+    display: none;
+}
+  .collection-slider-section {
+    padding: 30px 0;
+    background-color: #ffffff;
+}
+  @media (max-width: 767px) {
+    .collection-slider-section {
+      padding: 30px 0;
+    }
+    .collection-slider__heading {
+      font-size: calc({{ section.settings.heading_size }}px * 0.8);
+      margin-bottom: 20px;
+    }
+    .owl-nav button {
+      width: 30px;
+      height: 30px;
+    }
+    .owl-nav button.owl-prev {
+      left: -10px;
+    }
+    .owl-nav button.owl-next {
+      right: -10px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="collection-slider-section">
+  <div class="page-width">
+    {%- if section.settings.title != blank -%}
+      <h2 class="collection-slider__heading">{{ section.settings.title }}</h2>
+    {%- endif -%}
+
+    <div class="collection-slider owl-carousel">
+      {%- for block in section.blocks limit: section.settings.collections_to_show -%}
+        {%- assign collection = collections[block.settings.collection] -%}
+        {%- if collection != blank -%}
+          <div class="collection-slider__item" {{ block.shopify_attributes }}>
+            <a href="{{ collection.url }}" class="collection-slider__link">
+              <div class="collection-slider__image-wrapper">
+                {%- if collection.image -%}
+                  <img class="collection-slider__image" 
+                       src="{{ collection.image | img_url: '500x500', crop: 'center' }}" 
+                       alt="{{ collection.title | escape }}" 
+                       loading="lazy" 
+                       width="500" 
+                       height="500">
+                {%- else -%}
+                  <img class="collection-slider__image" 
+                       src="{{ collection.products.first.featured_image | img_url: '500x500', crop: 'center' }}" 
+                       alt="{{ collection.title | escape }}" 
+                       loading="lazy" 
+                       width="500" 
+                       height="500">
+                {%- endif -%}
+              </div>
+              <h3 class="collection-slider__title">{{ collection.title }}</h3>
+              <p class="collection-slider__count">({{ collection.all_products_count }} items)</p>
+            </a>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    $('.collection-slider').owlCarousel({
+      loop: {{ section.settings.loop }},
+      margin: {{ section.settings.item_margin }},
+      nav: {{ section.settings.show_navigation }},
+      dots: {{ section.settings.show_dots }},
+      autoplay: {{ section.settings.autoplay }},
+      autoplayTimeout: {{ section.settings.autoplay_speed }},
+      autoplayHoverPause: true,
+      responsive: {
+        0: {
+          items: {{ section.settings.mobile_items }}
+        },
+        768: {
+          items: {{ section.settings.tablet_items }}
+        },
+        1024: {
+          items: {{ section.settings.desktop_items }}
+        }
+      }
+    });
+  });
+</script>
+<!-- Add these before closing body tag -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<!-- Add this in the head section -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+{% schema %}
+{
+  "name": "Collection Slider",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Our Collections"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Collection title color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "count_color",
+      "label": "Product count color",
+      "default": "#777777"
+    },
+    {
+      "type": "range",
+      "id": "collections_to_show",
+      "min": 3,
+      "max": 16,
+      "step": 1,
+      "label": "Maximum collections to show",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Image border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Slider Settings"
+    },
+    {
+      "type": "range",
+      "id": "item_margin",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Item spacing",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 1000,
+      "max": 8000,
+      "step": 500,
+      "unit": "ms",
+      "label": "Autoplay speed",
+      "default": 3000
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "nav_background",
+      "label": "Navigation background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "nav_color",
+      "label": "Navigation color",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show dots indicator",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dots color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Responsive Items"
+    },
+    {
+      "type": "range",
+      "id": "mobile_items",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Items on mobile",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "tablet_items",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Items on tablet",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "desktop_items",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "label": "Items on desktop",
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Slider",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
